@@ -449,37 +449,45 @@
       }
 
       loadMusic() {
-        return new Promise(resolve => {
-          const listener = new THREE.AudioListener();
-          this.camera.add(listener);
-          this.sound = new THREE.Audio(listener);
-          const audioLoader = new THREE.AudioLoader();
-          audioLoader.load(
-            "Mi vida eres tu.mp3",
-            buffer => {
-              this.sound.setBuffer(buffer);
-              this.sound.setLoop(false);
-              this.sound.setVolume(0.5);
-              this.sound.play();
-              this.analyser = new THREE.AudioAnalyser(this.sound, 32);
-              const data = this.analyser.getAverageFrequency();
-              this.isRunning = true;
-              this.t0 = this.time.elapsed;
-              resolve(data);
-            },
-            progress => {
-              gsap.to(this.audioBtn, {
-                opacity: () => 1 - progress.loaded / progress.total,
-                duration: 1,
-                ease: "power1.out"
-              });
-            },
-            error => {
-              console.log(error);
-            }
-          );
+      loadMusic() {
+  return new Promise(resolve => {
+    const listener = new THREE.AudioListener();
+    this.camera.add(listener);
+    this.sound = new THREE.Audio(listener);
+    const audioLoader = new THREE.AudioLoader();
+
+    audioLoader.load(
+      "Mi vida eres tu.mp3",
+      buffer => {
+        this.sound.setBuffer(buffer);
+        this.sound.setLoop(false);
+        this.sound.setVolume(0.5);
+
+        // ⏩ Iniciar desde el segundo 15
+        const offset = 15;
+        if (this.sound.source) {
+          this.sound.source.start(0, offset);
+        }
+
+        this.analyser = new THREE.AudioAnalyser(this.sound, 32);
+        const data = this.analyser.getAverageFrequency();
+        this.isRunning = true;
+        this.t0 = this.time.elapsed;
+        resolve(data);
+      },
+      progress => {
+        gsap.to(this.audioBtn, {
+          opacity: () => 1 - progress.loaded / progress.total,
+          duration: 1,
+          ease: "power1.out"
         });
+      },
+      error => {
+        console.log(error);
       }
+    );
+  });
+    }
 
       addSnow() {
         this.snowMaterial = new THREE.ShaderMaterial({
