@@ -409,25 +409,33 @@
       }
 
       addButton() {
-        this.audioBtn = document.querySelector("button");
-        this.audioBtn.addEventListener("click", () => {
-          this.audioBtn.disabled = true;
-          if (this.analyser) {
-            this.sound.play();
-            this.time.t0 = this.time.elapsed;
-            this.data = 0;
-            this.isRunning = true;
-            gsap.to(this.audioBtn, {
-              opacity: 0,
-              duration: 1,
-              ease: "power1.out"
-            });
-          } else {
-            this.loadMusic().then(() => {
-              console.log("music loaded");
-            });
-          }
-        });
+  this.audioBtn = document.querySelector("button");
+  this.audioBtn.addEventListener("click", () => {
+    this.audioBtn.disabled = true;
+
+    const playFromOffset = () => {
+      if (this.sound.isPlaying) this.sound.stop();
+      this.sound.play(25); // ⏩ Reproduce desde el segundo 25
+      this.time.t0 = this.time.elapsed;
+      this.data = 0;
+      this.isRunning = true;
+
+      gsap.to(this.audioBtn, {
+        opacity: 0,
+        duration: 1,
+        ease: "power1.out"
+      });
+    };
+
+    if (this.analyser) {
+      playFromOffset();
+    } else {
+      this.loadMusic().then(() => {
+        console.log("music loaded");
+        playFromOffset();
+      });
+    }
+  });
       }
 
       loadObj(path) {
@@ -460,16 +468,12 @@
         this.sound.setBuffer(buffer);
         this.sound.setLoop(false);
         this.sound.setVolume(0.5);
-        // ⏩ Iniciar desde el segundo 15
-        const offset = 25;
-        if (this.sound.source) {
-          this.sound.source.start(0, offset);
-        }
 
         this.analyser = new THREE.AudioAnalyser(this.sound, 32);
         const data = this.analyser.getAverageFrequency();
         this.isRunning = true;
         this.t0 = this.time.elapsed;
+
         resolve(data);
       },
       progress => {
@@ -480,11 +484,11 @@
         });
       },
       error => {
-        console.log(error);
+        console.log("Error loading audio:", error);
       }
     );
   });
-      }
+  }
 
       addSnow() {
         this.snowMaterial = new THREE.ShaderMaterial({
