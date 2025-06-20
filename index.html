@@ -415,7 +415,7 @@
 
     const playFromOffset = () => {
       if (this.sound.isPlaying) this.sound.stop();
-      this.sound.play(25); // ⏩ Reproduce desde el segundo 25
+      this.sound.play(25); // ⏩ empieza en el segundo 25 sin esperar
       this.time.t0 = this.time.elapsed;
       this.data = 0;
       this.isRunning = true;
@@ -436,7 +436,7 @@
       });
     }
   });
-      }
+        }
 
       loadObj(path) {
         const loader = new GLTFLoader();
@@ -469,12 +469,12 @@
         this.sound.setLoop(false);
         this.sound.setVolume(0.5);
 
+        // Inicializamos el analyser (para visualizaciones)
         this.analyser = new THREE.AudioAnalyser(this.sound, 32);
-        const data = this.analyser.getAverageFrequency();
         this.isRunning = true;
         this.t0 = this.time.elapsed;
 
-        resolve(data);
+        resolve(); // Ya está listo para reproducir
       },
       progress => {
         gsap.to(this.audioBtn, {
@@ -488,7 +488,7 @@
       }
     );
   });
-  }
+     }
 
       addSnow() {
         this.snowMaterial = new THREE.ShaderMaterial({
