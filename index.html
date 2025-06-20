@@ -448,8 +448,8 @@
         });
       }
 
-      loadMusic() {
-      loadMusic() {
+      
+  loadMusic() {
   return new Promise(resolve => {
     const listener = new THREE.AudioListener();
     this.camera.add(listener);
@@ -487,7 +487,7 @@
       }
     );
   });
-    }
+      }
 
       addSnow() {
         this.snowMaterial = new THREE.ShaderMaterial({
