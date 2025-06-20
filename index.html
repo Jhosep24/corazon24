@@ -412,31 +412,23 @@
   this.audioBtn = document.querySelector("button");
   this.audioBtn.addEventListener("click", () => {
     this.audioBtn.disabled = true;
-
-    const playFromOffset = () => {
-      if (this.sound.isPlaying) this.sound.stop();
-      this.sound.play(25); // ⏩ empieza en el segundo 25 sin esperar
+    if (this.analyser) {
+      this.sound.play();
       this.time.t0 = this.time.elapsed;
       this.data = 0;
       this.isRunning = true;
-
       gsap.to(this.audioBtn, {
         opacity: 0,
         duration: 1,
         ease: "power1.out"
       });
-    };
-
-    if (this.analyser) {
-      playFromOffset();
     } else {
       this.loadMusic().then(() => {
         console.log("music loaded");
-        playFromOffset();
       });
     }
   });
-        }
+      }
 
       loadObj(path) {
         const loader = new GLTFLoader();
@@ -468,13 +460,12 @@
         this.sound.setBuffer(buffer);
         this.sound.setLoop(false);
         this.sound.setVolume(0.5);
-
-        // Inicializamos el analyser (para visualizaciones)
+        this.sound.play();
         this.analyser = new THREE.AudioAnalyser(this.sound, 32);
+        const data = this.analyser.getAverageFrequency();
         this.isRunning = true;
         this.t0 = this.time.elapsed;
-
-        resolve(); // Ya está listo para reproducir
+        resolve(data);
       },
       progress => {
         gsap.to(this.audioBtn, {
@@ -484,11 +475,11 @@
         });
       },
       error => {
-        console.log("Error loading audio:", error);
+        console.log(error);
       }
     );
   });
-     }
+  }
 
       addSnow() {
         this.snowMaterial = new THREE.ShaderMaterial({
